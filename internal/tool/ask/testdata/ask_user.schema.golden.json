@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "hint": {
+      "description": "Optional placeholder/explanation text shown alongside the question.",
+      "type": "string"
+    },
+    "question": {
+      "description": "The question to ask the operator. Use a single complete sentence; this is rendered verbatim in CLI/Web.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "question"
+  ],
+  "type": "object"
+}

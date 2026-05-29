@@ -1,0 +1,13 @@
+version: "2"
+sql:
+  - engine: "sqlite"
+    schema: "internal/session/migrations"
+    queries: "internal/session/store/queries"
+    gen:
+      go:
+        package: "gen"
+        out: "internal/session/store/gen"
+        sql_package: "database/sql"
+        emit_interface: false
+        emit_json_tags: false
+        emit_pointers_for_null_types: true

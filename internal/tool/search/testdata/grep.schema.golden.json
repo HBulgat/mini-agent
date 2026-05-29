@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "context_after": {
+      "description": "Lines to include after each match (rg -A); default: 0; max: 50.",
+      "type": "integer"
+    },
+    "context_before": {
+      "description": "Lines to include before each match (rg -B); default: 0; max: 50.",
+      "type": "integer"
+    },
+    "multiline": {
+      "description": "When true the regex '.' matches newlines (RE2 (?s) flag); default: false.",
+      "type": "boolean"
+    },
+    "output_mode": {
+      "description": "One of 'content' (default; matching lines + context)",
+      "enum": [
+        "content",
+        "files_with_matches",
+        "count"
+      ],
+      "type": "string"
+    },
+    "path": {
+      "description": "File or directory to search. Relative paths resolve against the session cwd. When a directory",
+      "type": "string"
+    },
+    "pattern": {
+      "description": "RE2 regular expression to search for. RE2 does not support lookaheads or backreferences.",
+      "type": "string"
+    }
+  },
+  "required": [
+    "pattern",
+    "path"
+  ],
+  "type": "object"
+}

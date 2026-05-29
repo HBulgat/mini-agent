@@ -1,0 +1,33 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "command": {
+      "description": "Shell command to execute via /bin/bash -c. Supports the full POSIX feature set including pipes",
+      "type": "string"
+    },
+    "cwd": {
+      "description": "Working directory for the command. Relative paths resolve against the session cwd; defaults to the session cwd when omitted.",
+      "type": "string"
+    },
+    "env_overrides": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Environment variables to set. Empty value removes the variable. Merged on top of the parent process environment.",
+      "type": "object"
+    },
+    "stdin": {
+      "description": "Standard input to pipe into the command; empty string means /dev/null.",
+      "type": "string"
+    },
+    "timeout_sec": {
+      "description": "Wall-clock timeout in seconds; default 60; clamped to [1",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "command"
+  ],
+  "type": "object"
+}

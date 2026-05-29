@@ -1,0 +1,48 @@
+# IDE
+.vscode/
+.idea/
+
+# Go build artifacts
+/mini-agent
+/mini-agent.exe
+/bin/
+/dist/
+/build/
+*.test
+*.out
+coverage.txt
+*.prof
+
+# Go workspace
+go.work
+go.work.sum
+
+# Local data / runtime artifacts (mini-agent writes here by default)
+.mini-agent/
+data.db
+*.db-journal
+*.db-wal
+*.db-shm
+
+# Frontend (web/)
+web/node_modules/
+web/dist/
+web/.vite/
+web/coverage/
+web/.eslintcache
+web/.turbo/
+
+# pnpm / npm logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Local environment secrets (NOT used by config — see D25 — but keep
+# accidental copies out of git just in case).
+.env
+.env.*
+!.env.example

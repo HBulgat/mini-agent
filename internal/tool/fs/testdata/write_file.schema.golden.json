@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "content": {
+      "description": "Full file content to write (UTF-8 text only; max 1 MB)",
+      "type": "string"
+    },
+    "mkdir_parents": {
+      "description": "Auto-create missing parent directories; default: true",
+      "type": "boolean"
+    },
+    "path": {
+      "description": "Absolute or relative path to the file to write",
+      "type": "string"
+    }
+  },
+  "required": [
+    "path",
+    "content"
+  ],
+  "type": "object"
+}

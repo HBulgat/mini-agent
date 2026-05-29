@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "expected_occurrences": {
+      "description": "Required exact match count; default: 1",
+      "type": "integer"
+    },
+    "new_str": {
+      "description": "Literal replacement text (empty string deletes OldStr)",
+      "type": "string"
+    },
+    "old_str": {
+      "description": "Literal substring to find (must be unique unless expected_occurrences is set)",
+      "type": "string"
+    },
+    "path": {
+      "description": "Absolute or relative path to an existing text file",
+      "type": "string"
+    }
+  },
+  "required": [
+    "path",
+    "old_str",
+    "new_str"
+  ],
+  "type": "object"
+}

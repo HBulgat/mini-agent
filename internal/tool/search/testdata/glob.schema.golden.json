@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "cwd": {
+      "description": "Directory to search from. Relative to the session cwd; defaults to the session cwd when omitted.",
+      "type": "string"
+    },
+    "pattern": {
+      "description": "Doublestar glob pattern. Supports * ? [...] {a",
+      "type": "string"
+    }
+  },
+  "required": [
+    "pattern"
+  ],
+  "type": "object"
+}

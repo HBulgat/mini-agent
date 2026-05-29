@@ -1,0 +1,26 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "limit": {
+      "description": "Max lines to read from offset; default: 200",
+      "type": "integer"
+    },
+    "max_bytes": {
+      "description": "Hard cap on returned bytes; default: 200000 (200 KB) max: 1048576 (1 MB)",
+      "type": "integer"
+    },
+    "offset": {
+      "description": "Starting line (1-based); default: 1",
+      "type": "integer"
+    },
+    "path": {
+      "description": "Absolute or relative path to a text file",
+      "type": "string"
+    }
+  },
+  "required": [
+    "path"
+  ],
+  "type": "object"
+}

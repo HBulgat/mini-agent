@@ -1,0 +1,27 @@
+# Build output
+dist/
+build/
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Editors
+.vscode-test/
+.DS_Store
+*.local
+
+# Vite cache
+.vite/
+
+# Test coverage
+coverage/
+*.lcov

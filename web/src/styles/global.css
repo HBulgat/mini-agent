@@ -1,0 +1,27 @@
+/* Global resets so AntD's typography lands on a predictable canvas.
+ * Keep this file tiny — component-level styles belong in CSS Modules or
+ * AntD's `cssVar` tokens, not here. */
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  font-family:
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
+}
+
+body {
+  background: #f5f7fa;
+}
+
+* {
+  box-sizing: border-box;
+}

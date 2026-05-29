@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "ignore_patterns": {
+      "description": "Glob patterns to skip (doublestar syntax). When omitted",
+      "items": {
+        "type": "string"
+      },
+      "type": "array"
+    },
+    "path": {
+      "description": "Directory path to list. Relative paths resolve against the session cwd.",
+      "type": "string"
+    },
+    "recursive": {
+      "description": "When true",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "path"
+  ],
+  "type": "object"
+}
