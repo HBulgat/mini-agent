@@ -12,7 +12,7 @@
 | 需求文档 | ✅ 已锁定 | 含 Skill 模块补丁；详见 `../requirements/` |
 | 系统设计 | 🔄 进行中 | R1–R6 + R7-1' 已锁定；R7-2/R8–R14 待开展 |
 | 开发计划 | ✅ 基础版已制定 | Iter-0 / Iter-1 / Iter-2 全部前置依赖就绪 |
-| 实际编码 | 🔄 进行中（Iter-2）| Iter-0 已完成 6/7；Iter-1 已完成 7/9；Iter-2 已完成 7/9 + T2.3 扩展，**P0 工具集 9 + agent.Loop v1 + AGENTS.md + 端到端冒烟 + 四模式验收全通** |
+| 实际编码 | 🔄 进行中（Iter-2）| Iter-0 已完成 6/7；Iter-1 已完成 7/9；Iter-2 已完成 7/9 + T2.3 扩展，**P0 工具集 9 + agent.Loop v1 + AGENTS.md + 端到端冒烟 + 四模式验收全通**；R9（CLI / REPL）讨论中 |
 
 | 阶段 | 已完成任务 | 进行中 | 待开始 | 阻塞 |
 |---|---|---|---|---|
@@ -42,7 +42,7 @@
 | R7-1' | 工具实现模板 + read_file | ✅ 已锁定 | 2026-05-24 | `10-tool-template-and-readfile.md`（含对 05 §5.4 的就地修订）|
 | R7-2 | P1/P2 工具 schema | ⏳ 按 Iter-3/4 进度触发 | — | — |
 | R8 | 上下文压缩算法 | ⏳ 待开始 | — | — |
-| R9 | CLI / REPL | ⏳ 待开始 | — | — |
+| R9 | CLI / REPL | 🔄 讨论中 | — | 计划落 `11-cli-and-repl.md` |
 | R10 | Web UI 后端 API | ⏳ 待开始 | — | — |
 | R11 | 前端架构 | ⏳ 待开始 | — | — |
 | R12 | 日志与 Trace 格式 | ⏳ 待开始 | — | — |
@@ -186,6 +186,7 @@
 | 2026-05-27 | 开发 | **T2.8 完成（AGENTS.md 加载）**：`internal/agentsmd/{loader,doc}.go` + `loader_test.go`；Loader 接口 `Load(ctx, cwd) (string, error)` 与 agent.AgentsMDLoader 完全匹配（无需适配器）；Config 三字段（GlobalPath / ProjectLookup / MaxBytes）+ 运行期 `~/~/foo` 展开；**D27 实化**：全局 → 项目级，不向上递归；**§7.2.2 实化**：`\n\n---\n\n` 拼接，TrimSpace 后空 → 缺失语义；**D53 实化**：>1MB 截断 + `[...truncated, N bytes total]` + `info.Size()` 真实尺寸；**§7.2.5 fail-soft**：文件不存在 / 空 / 读失败 / 目录 / 权限拒绝全部静默返空。bootstrap step 5.6 实化注入；prepareInitialHistory 已支持，无需改 Loop。fakeProvider 加 `lastReq` 字段让集成测试断言 system 消息内容 | 32 个 agentsmd 测试（discovery 6 / emptiness 4 / truncation 2 / construction 3 / ctx 1 / tilde 7 / merge 6 / cwd reload 1 + nil cfg 1 + filesys 1）+ 4 个 agent 集成测试（GlobalAndProject 注入 / Absent 不注入 / Loader error fail-soft / 错误时不漏 wrapper）；agent 包 32→36；18 个包 `make vet`/`make test` 全过 |
 | 2026-05-27 | 开发 | **T1.9 完成（端到端冒烟）**：`internal/bootstrap/e2e_smoke_test.go` — 3 轮 ReAct（read_file → list_dir → 文本 summary），**绕过 cli/repl 直接驱动 `app.Agent.Run`**。fixture：BootstrapV1 全装配 + temp cwd（README.md/AGENTS.md/go.mod）+ 真实 SQLite + 真实 9 工具 + 真实 Gate(ModeYes) + 真实 agentsmd + scriptable mockProvider 经 `Registry.Register + SetActive` 注入并重建 Loop；captureSink 捕获事件。**8 大断言全过**：StopReason=end_turn / Steps=3 / mock 调 3 次 / `<project_guidelines>` 三轮都含 / Sink.toolStarts=2+toolEnds=2 顺序正确 / round-2 tool_result 真含 README 内容 / Repo 持久化 6 条 + summary 文本 / Usage=150/60。**关键发现并修复 Loop v1 bug**：UserMessage 之前只入 history 送 LLM 但未持久化，导致 Resume/`/show`/Web 视图丢失用户输入；修复为 `prepareInitialHistory` 之后调 `AppendMessage` 用 `session.FromLLM` 包装；同步更新 3 个旧 loop 测试期望值 | 1 个新 e2e + 修 3 个旧 loop 期望值；18 个包 `make vet`/`make test` 全过；端到端首次跑通 zero-network |
 | 2026-05-27 | 开发 | **T2.9 完成（四模式端到端验收）**：`internal/bootstrap/four_modes_e2e_test.go` — 9 个 e2e 用例覆盖 §4.3 工具×权限矩阵代表性单元格（C1 Default+read_file 放行 / C2 Default+write_file 用户拒绝 / C3 AutoEdit+write_file 放行 / C4 Yes+bash 安全 / C5 Yes+bash 硬黑名单短路 / C6 Plan+read_file / C7 Plan+write_file DenyMode / C8 Default+ask_user Meta 放行 / Sanity）。fixture 抽象 `newFourModeFixture` + approve/deny prompter fake。**发现并修复两个 Loop bug**：(Bug-1) Gate 拒绝时 Loop 不发 Sink 事件 — 修复：exec.go 新 `emitDeniedToolEvents` 在 Deny/DenyHard 分支补发 Start+End 对带拒绝原因 Err；(Bug-2) ask_user 装配期固化 NopPrompter，运行期 RunInput.Prompter 用不上 — 修复：新增 `internal/uio/context.go`（WithPrompter/PrompterFromContext + WithSink/SinkFromContext）让 Loop 在 Invoke 前注入 ctx，ask_user 优先取 ctx prompter 回退构造期；同样的桥接支持未来 CLI+Web 并发 Run 共享 tool registry | 9 个 four_modes 测试全过；18 个包 `make vet`/`make test` 全过；§4.3 矩阵端到端验证完毕，至此 Iter-2 仅剩 T2.7（卡 R9）|
+| 2026-05-29 | 设计 | **R9 讨论开启**（CLI / REPL）：盘点 R9 留白 12 项 — (1) 命令派发架构 / (2) 解析协议 / (3) 用户输入语义（`/cmd` 是否持久化）/ (4) 17 命令完整规格表 / (5) Sink 输出契约 / (6) Ctrl+C 状态机 1+1 双击窗口 / (7) 启动 flag 定稿 / (8) `migrate` 子命令 up/down/status / (9) 一次性 prompt 模式 + 退出码 / (10) `/help` 自描述 / (11) 错误恢复 / (12) 与 R10 webapi 对偶。提交完整草案给用户审阅 — 提案：派发器表驱动放 `internal/cli/repl/slash`（不复用 cobra）；行首 `/` 启用命令派发优先于 LLM；`/cmd` 不入 user history（控制语义 vs 对话语义分离）但状态变化命令（/clear /compact /cd /model /mode）写 system 痕迹、`/skill` 写 hidden 痕迹、查询命令仅走 Sink；ctx 取消单次→中断 running、空闲态 1s 内双击退出；`-p prompt` 非交互模式 NeedApproval 默认 Deny；退出码 end_turn=0 / interrupted=130 / error=1 / max_steps=2 | 设计文档（`11-cli-and-repl.md`）尚未落地，等用户对 12 节提案逐条 ACK 或提修改 |
 
 ---
 
@@ -228,21 +229,19 @@
 
 > 每次更新本文件时，明确写出"下一步要做什么"
 
-**当前下一步**：**Iter-2 收尾仅剩 T2.7（REPL 斜杠命令派发）一项，卡在 R9 设计轮次**。R9 需要锁定的协议：`/cd <path>` / `/model <name>` / `/show-system` / `/show-archived` / `/show-hidden` / `/clear` / `/compact` / `/perm` / `/exit` 等命令的输入解析、消息持久化语义（user 输入 `/cd` 是否产生 user 消息？）、与 Sink 的交互（如何打印命令结果）、错误恢复（无效命令是 user 消息还是直接报错）。在 R9 锁定前，**Iter-2 已经端到端可跑通**：开发者可以通过写脚本调用 `app.Agent.Run` 完成所有 P0 任务（这正是 T1.9 / T2.9 已验证的）。
+**当前下一步**：**R9 设计讨论中**——已向用户提交 R9 完整草案（12 节留白逐条提案），包含：(1) 派发架构走 `internal/cli/repl/slash` 表驱动而非 cobra；(2) 解析协议行首 `/` 优先于 LLM；(3) 控制类命令静默 / 状态变化命令 system 痕迹 / `/skill` hidden 痕迹 / 查询走 Sink；(4) 17 命令完整规格表；(5) 复用 `Sink.EmitInfo`；(6) Ctrl+C 状态机 running 中断 + idle 1s 双击退出；(7) 启动 flag 与 `/cmd` 等价对应；(8) `migrate up/down/status`；(9) `-p` 一次性模式 NeedApproval 默认 Deny，退出码 end_turn=0 / interrupted=130 / error=1 / max_steps=2；(10) `/help` 自描述；(11) 错误恢复不入历史；(12) 与 R10 webapi 故意预留对偶。**等待用户对 12 节提案逐条 ACK 后落 `11-cli-and-repl.md` + 追加 D87+ 决定 + 更新 ROADMAP**。
 
-**继续推进的两个候选方向**：
-1. **Iter-3 启动**（T3.x：压缩 / 子 agent / 流式渲染细化）—— Iter-2 的 P0 闭环已就绪，可直接进入 P1 功能
-2. **R9 设计**（解锁 T2.7 / T1.7） —— 需要再开一轮系统设计讨论
+R9 锁定后 → T2.7（REPL 斜杠命令派发）+ T1.7（cli/repl 实化 + uio CLI 实化）解锁 → Iter-2 完结 → Iter-3 启动。
+
+**或并行推进 Iter-3 P1 功能**（不必等 R9）：T3.1/T3.2 上下文压缩等 R8；T3.3 write_plan + T3.4 task 等 R7-2。
 
 **Iter-0 剩余 1 项**：T0.5 日志封装（继续等 R12）。**Iter-1 已完成 7/9**（T1.7 卡 R9）。**Iter-2 已完成 7/9 + 只读工具补全子任务**（T2.1 + T2.2 + T2.3 + T2.3 扩展 + T2.4 + T2.5 + T2.6 + T2.8 + T2.9 + T1.9）。**P0 工具集 9 + agent.Loop v1 + AGENTS.md + 端到端冒烟 + 四模式验收全通**。
 
 **已就绪可立即开发的任务**（按 Iter 顺序）：
 - **Iter-0**：（无；T0.5 等 R12）
-- **Iter-1**：（无新可立即开发；T1.7 等 R9；T1.9 阻塞依赖 T2.6）
+- **Iter-1**：（无新可立即开发；T1.7 等 R9）
 - **Iter-2**：（仅剩 T2.7 卡 R9）
-- **Iter-2**：T2.1 tool.Registry / T2.2 permission.Gate / T2.3 write_file/edit_file/delete_file（按模板）/ T2.4 bash（含硬黑名单实现期补充）/ T2.5 ask_user / T2.6 agent.Loop / T2.8 AGENTS.md 加载
-- **Iter-4**：T4.5 子 agent 继承 skill / T4.9 Anthropic 适配 / T4.10 白黑名单
-- **Iter-5**：T5.4 serve 子命令
+- **Iter-3 起**：均待对应设计轮（R7-2 / R8 / R10 / R11 / R12 / R13）锁定
 
 **待后续设计回填的任务**：
 - T0.5 日志封装（依赖 R12）
@@ -254,4 +253,4 @@
 - T5.1–T5.3 / T5.5 / T5.6 / T6.* Web UI（依赖 R10/R11）
 - T7.1 MCP Client（依赖 R13）
 
-**建议开发顺序**：T0.1 ✅ → T0.2 ✅ → T0.3 ✅ → T0.6 ✅ → T0.4 ✅ → T0.7 ✅ → T1.5 ✅ → T1.2 ✅ → T1.3 ✅ → T1.4 ✅ → T1.6 ✅ → T1.8 ✅ → T2.1 ✅ → T2.2 ✅ → T2.3 ✅ → T2.3+ ✅ → T2.4 ✅ → T2.5 ✅ → T2.6 ✅ → T2.8 ✅ → T1.9 ✅ → T2.9 ✅ → **下一步 T2.7（REPL 斜杠命令派发，等 R9）or 启动 Iter-3 推进 P1**。
+**建议开发顺序**：T0.1 ✅ → T0.2 ✅ → T0.3 ✅ → T0.6 ✅ → T0.4 ✅ → T0.7 ✅ → T1.5 ✅ → T1.2 ✅ → T1.3 ✅ → T1.4 ✅ → T1.6 ✅ → T1.8 ✅ → T2.1 ✅ → T2.2 ✅ → T2.3 ✅ → T2.3+ ✅ → T2.4 ✅ → T2.5 ✅ → T2.6 ✅ → T2.8 ✅ → T1.9 ✅ → T2.9 ✅ → **R9 设计中（CLI/REPL，本轮）→ R9 锁定 → T2.7 + T1.7 → Iter-2 完结 → Iter-3 启动**。或：R9 讨论期内并行启动 Iter-3 不依赖 R9 的子任务（待 R8 锁定后 T3.1/T3.2 / 待 R7-2 锁定后 T3.3/T3.4）。

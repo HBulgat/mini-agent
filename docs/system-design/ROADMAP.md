@@ -22,7 +22,7 @@
 | **R7-1'** | 工具实现模板（6 条统一规范 + read_file 完整设计 + testkit 套件 + 8 个 P0 工具骨架）| ✅ 已锁定 | `10-tool-template-and-readfile.md`（含对 05 §5.4 的就地修订）|
 | R7-2 | P1/P2 工具 schema（write_plan / task / skill_tool / web_fetch / web_search） | ⏳ 按 Iter-3/Iter-4 进度触发 | 待定 |
 | R8 | 上下文压缩：Compactor 接口、三种策略算法、触发与保留 | ⏳ 待开始 | 待定 |
-| R9 | CLI / REPL：cobra 命令树、斜杠命令派发、中断处理细节 | ⏳ 待开始 | 待定 |
+| R9 | CLI / REPL：cobra 命令树、斜杠命令派发、中断处理细节 | 🔄 讨论中（2026-05-29 起） | 计划 `11-cli-and-repl.md` |
 | R10 | Web UI 后端 API：接口列表、SSE 流式契约、权限审批流 | ⏳ 待开始 | 待定 |
 | R11 | 前端架构：目录结构、状态分层、组件划分 | ⏳ 待开始 | 待定 |
 | R12 | 日志与 Trace：JSON Lines schema、轮转、span 关系 | ⏳ 待开始 | 待定 |
